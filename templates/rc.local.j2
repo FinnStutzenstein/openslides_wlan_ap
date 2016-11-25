@@ -1,0 +1,13 @@
+#!/bin/sh -e
+
+# Print the IP address
+_IP=$(hostname -I) || true
+if [ "$_IP" ]; then
+      printf "My IP address is %s\n" "$_IP"
+fi
+
+# route all traffic from wlan to eth0
+iptables -t nat -A POSTROUTING -s {{ pi_wlan_ap_network }}.0/24 ! -d {{ pi_wlan_ap_network}}.0/24 -j MASQUERADE
+
+exit 0
+

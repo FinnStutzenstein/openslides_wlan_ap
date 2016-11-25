@@ -1,7 +1,7 @@
 ---
 - name: Install packages
   become: yes
-  pacman:
+  apt:
     name: "{{ item }}"
     state: present
   with_items:
@@ -39,6 +39,26 @@
     src: dnsmasq.conf.j2
   notify:
   - restart dnsmasq
+
+- name: Configure Interfaces
+  become: yes
+  template:
+    dest: /etc/network/interfaces
+    src: interfaces.j2
+  notify:
+  - restart network
+
+- name: Enable IPv4 forwarding
+  become: yes
+  template:
+    dest: /etc/sysctl.conf
+    src: sysctl.conf.j2
+
+- name: Route all connections from wlan0 to eth0
+  become: yes
+  template:
+    dest: /etc/rc.local
+    src: rc.local.j2
 
 - name: Stop and disable systemd-resolved
   become: yes
